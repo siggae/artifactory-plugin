@@ -32,11 +32,13 @@ public class DependenciesDownloaderImpl implements DependenciesDownloader {
 
     private ArtifactoryDependenciesClient client;
     private FilePath workspace;
+    private boolean resolveLatestVersionOnly;
     private Log log;
 
-    public DependenciesDownloaderImpl(ArtifactoryDependenciesClient client, FilePath workspace, Log log) {
+    public DependenciesDownloaderImpl(ArtifactoryDependenciesClient client, FilePath workspace, Log log, boolean resolveLatestVersionOnly) {
         this.client = client;
         this.workspace = workspace;
+        this.resolveLatestVersionOnly = resolveLatestVersionOnly;
         this.log = log;
     }
 
@@ -46,7 +48,15 @@ public class DependenciesDownloaderImpl implements DependenciesDownloader {
 
     public List<Dependency> download(Set<DownloadableArtifact> downloadableArtifacts) throws IOException {
         DependenciesDownloaderHelper helper = new DependenciesDownloaderHelper(this, log);
-        return helper.downloadDependencies(downloadableArtifacts);
+        if(this.resolveLatestVersionOnly)
+        {
+	        Set<DownloadableArtifact> filteredArtifacts = new VersionDownloadFilter(log).filter(downloadableArtifacts);
+	        return helper.downloadDependencies(filteredArtifacts);
+        }
+        else
+        {
+        	return helper.downloadDependencies(downloadableArtifacts);
+        }
     }
 
     public String getTargetDir(String targetDir, String relativeDir) throws IOException {

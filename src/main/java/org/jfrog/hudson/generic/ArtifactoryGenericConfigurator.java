@@ -48,6 +48,7 @@ public class ArtifactoryGenericConfigurator extends BuildWrapper implements Depl
     private final String deployPattern;
     private final String resolvePattern;
     private final String matrixParams;
+    private final boolean resolveLatestVersionOnly;
 
     private final boolean deployBuildInfo;
     /**
@@ -70,6 +71,7 @@ public class ArtifactoryGenericConfigurator extends BuildWrapper implements Depl
     @DataBoundConstructor
     public ArtifactoryGenericConfigurator(ServerDetails details, Credentials overridingDeployerCredentials,
                                           String deployPattern, String resolvePattern, String matrixParams,
+                                          boolean resolveLatestVersionOnly,
                                           boolean deployBuildInfo,
                                           boolean includeEnvVars, IncludesExcludes envVarsPatterns,
                                           boolean discardOldBuilds,
@@ -81,6 +83,7 @@ public class ArtifactoryGenericConfigurator extends BuildWrapper implements Depl
         this.deployPattern = deployPattern;
         this.resolvePattern = resolvePattern;
         this.matrixParams = matrixParams;
+        this.resolveLatestVersionOnly = resolveLatestVersionOnly;
         this.deployBuildInfo = deployBuildInfo;
         this.includeEnvVars = includeEnvVars;
         this.envVarsPatterns = envVarsPatterns;
@@ -259,7 +262,7 @@ public class ArtifactoryGenericConfigurator extends BuildWrapper implements Depl
                 listener);
         try {
             GenericArtifactsResolver artifactsResolver = new GenericArtifactsResolver(build, listener,
-                    dependenciesClient, getResolvePattern());
+                    dependenciesClient, getResolvePattern(), resolveLatestVersionOnly);
             publishedDependencies = artifactsResolver.retrievePublishedDependencies();
             buildDependencies = artifactsResolver.retrieveBuildDependencies();
 

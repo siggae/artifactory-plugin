@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright (C) 2011 JFrog Ltd.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div>
+    If a wildcard ('*') resolves to a version in the source pattern and 
+    would resolve multiple versions only the highest version would get downloaded.
+    E.g assume two artifacts:<br/>
+    path_to_version/2.0/dir/a.ext<br/>
+    path_to_version/2.1/dir/a.ext<br/>
+    and a resolve pattern of<br/>
+    path_to_version/*/dir/**<br/>
+    then only the 2.1 version would get downloaded.<br/>
+    <b>Note:</b> only the first wildcard is tested against a version
+</div>

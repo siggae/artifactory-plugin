@@ -55,6 +55,11 @@
                          help="/plugin/artifactory/help/common/help-resolvePattern.html">
                     <f:textarea value="${instance.resolvePattern}"/>
                 </f:entry>
+                <f:entry field="resolveLatestVersionOnly"
+                         help="/plugin/artifactory/help/common/help-resolveLatestVersionOnly.html">
+                    <f:checkbox default="false" checked="${instance.resolveLatestVersionOnly}"/>
+                    <label class="attach-previous">${%Resolve latest versions only}</label>
+                </f:entry>
                 <f:entry title="Published Artifacts" field="deployPattern"
                          help="/plugin/artifactory/help/common/help-deployPattern.html">
                     <f:textarea value="${instance.deployPattern}"/>

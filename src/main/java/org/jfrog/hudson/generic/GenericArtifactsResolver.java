@@ -41,13 +41,15 @@ public class GenericArtifactsResolver {
     private final AbstractBuild build;
     private final ArtifactoryDependenciesClient client;
     private String resolvePattern;
+    private boolean resolveLatestVersionOnly;
     private Log log;
 
     public GenericArtifactsResolver(AbstractBuild build, BuildListener listener, ArtifactoryDependenciesClient client,
-            String resolvePattern) throws IOException, InterruptedException {
+            String resolvePattern, boolean resolveLatestVersionOnly) throws IOException, InterruptedException {
         this.build = build;
         this.client = client;
         this.resolvePattern = Util.replaceMacro(resolvePattern, build.getEnvironment(listener));
+        this.resolveLatestVersionOnly = resolveLatestVersionOnly;
         log = new JenkinsBuildInfoLog(listener);
     }
 
@@ -62,6 +64,6 @@ public class GenericArtifactsResolver {
     }
 
     private DependenciesDownloader createDependenciesDownloader() {
-        return new DependenciesDownloaderImpl(client, build.getWorkspace(), log);
+        return new DependenciesDownloaderImpl(client, build.getWorkspace(), log, resolveLatestVersionOnly);
     }
 }

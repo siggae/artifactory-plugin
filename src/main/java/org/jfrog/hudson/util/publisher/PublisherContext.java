@@ -39,6 +39,7 @@ public class PublisherContext {
     private boolean licenseAutoDiscovery;
     private boolean discardOldBuilds;
     private boolean discardBuildArtifacts;
+    private boolean resolveLatestVersionOnly;
     private boolean deployArtifacts;
     private IncludesExcludes includesExcludes;
     private boolean skipBuildInfoDeploy;
@@ -309,6 +310,11 @@ public class PublisherContext {
             return this;
         }
 
+        public Builder resolveLatestVersionOnly(boolean resolveLatestVersionOnly) {
+            publisher.resolveLatestVersionOnly = resolveLatestVersionOnly;
+            return this;
+        }
+        
         public Builder matrixParams(String matrixParams) {
             publisher.matrixParams = matrixParams;
             return this;
