@@ -28,7 +28,7 @@ public class VersionDownloadFilter implements DownloadFilter {
 		Set<DownloadableArtifact> filteredDownloadableArtifacts = Sets.newHashSet();
 		for (DownloadableArtifact downloadableArtifact : downloadableArtifacts)
 		{
-			/*
+			
 			log.info("new DownloadableArtifact( "
 					+ "\"" + downloadableArtifact.getRepoUrl()
 					+ "\", \""+ downloadableArtifact.getTargetDirPath() 
@@ -36,10 +36,11 @@ public class VersionDownloadFilter implements DownloadFilter {
 					+ "\", \""+ downloadableArtifact.getMatrixParameters()
 					+ "\", \""+ downloadableArtifact.getSourcePattern()
 					//+ "\", \""+ downloadableArtifact.getPatternType()
-					+ "\", PatternType.NORMAL);");*/
+					+ "\", PatternType.NORMAL);");
 			int firstWildcard = downloadableArtifact.getSourcePattern().indexOf("*");
 			//check that it is a single wildcard and not double (**)
-			if((downloadableArtifact.getSourcePattern().length() > firstWildcard)
+			if(firstWildcard > 0
+					&& (downloadableArtifact.getSourcePattern().length() > firstWildcard)
 					&& (downloadableArtifact.getSourcePattern().charAt(firstWildcard+1) != '*'))
 			{
 				//we are safe now that the first wildcard is a single one
@@ -73,7 +74,7 @@ public class VersionDownloadFilter implements DownloadFilter {
 		}
 		for(String rowKey : versionTable.rowKeySet())
 		{
-			String latestVersion = "zzz";
+			String latestVersion = "";
 			for(String version : versionTable.row(rowKey).keySet())
 			{
 				log.debug(rowKey + ":" + version + ":" + versionTable.get(rowKey, version).size());
@@ -81,7 +82,20 @@ public class VersionDownloadFilter implements DownloadFilter {
 					latestVersion = version;
 			}
 			log.info(rowKey + ":" + latestVersion+ " will be downloaded");
-			filteredDownloadableArtifacts.addAll(versionTable.get(rowKey, latestVersion));
+			/*should the diredctory with the wildcard kept?
+			 * if(false)
+				filteredDownloadableArtifacts.addAll(versionTable.get(rowKey, latestVersion));
+			else*/
+			{
+				for(DownloadableArtifact da : versionTable.get(rowKey, latestVersion))
+				{
+					DownloadableArtifact daNew = new FilteredDownloadableArtifact(da);
+					filteredDownloadableArtifacts.add(daNew);
+					log.debug(daNew.toString());
+					
+				}
+				//log.debug("filteredDownloadableArtifacts for key "+ rowKey + ": " +filteredDownloadableArtifacts.size());
+			}
 		}
 		
 		return filteredDownloadableArtifacts;
@@ -120,10 +134,9 @@ public class VersionDownloadFilter implements DownloadFilter {
 	    	try { val1 = Integer.valueOf(vals1[i]); } catch(NumberFormatException nfe) { }
 	    	try { val2 = Integer.valueOf(vals2[i]); } catch(NumberFormatException nfe) { }
 
-	    	if( val1 != null && val2 != null)
-	    	{	
-	    		int diff = val1.compareTo(val2);
-	        	return Integer.signum(diff);
+	    	if( val1 == null && val2 == null)
+	    	{
+	    		return Integer.signum(vals1[i].compareTo(vals2[i]));
 	    	}
 	    	else if(val1 == null)
 	    	{
@@ -134,8 +147,9 @@ public class VersionDownloadFilter implements DownloadFilter {
 	    		return 1;
 	    	}
 	    	else
-	    	{
-	    		return Integer.signum(vals1[i].compareTo(vals2[i]));
+	    	{	
+	    		int diff = val1.compareTo(val2);
+	        	return Integer.signum(diff);
 	    	}
 	    }
 	    // the strings are equal or one string is a substring of the other

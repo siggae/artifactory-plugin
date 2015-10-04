@@ -1,6 +1,7 @@
 package org.jfrog.hudson.generic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,13 +23,17 @@ public class VersionDownloadFilterTest {
 				{ "-1", "11.200.0-build.94", "11.200.1" },
 				{ "1", "11.200.0-build.94", "11.200.0-build.85" },
 				{ "1", "11.200.0.3.94", "11.200.0-build.85" },
-				{ "1", "11.200.0", "zzz" }
+				{ "1", "11.200.0", "zzz" },
+				{ "-1", "11a", "zzz" },
+				{ "1", "11a", "" },
+				{ "1", "11", "" },
+				{ "1", "1a", "0a" }
 		};
 		
 		for ( String[] vector : testvector)
 		{
 			int result = VersionDownloadFilter.versionCompare(vector[1], vector[2]);
-			System.out.println(result);
+			//System.out.println(result);
 			assertEquals (Integer.parseInt(vector[0]), result);
 		}
 		
@@ -41,35 +46,45 @@ public class VersionDownloadFilterTest {
 		for(DownloadableArtifact artifact : downloadableArtifacts)
 			downloadableArtifactsSet.add(artifact);
 		Set<DownloadableArtifact> filteredArtifacts = filter.filter((Set<DownloadableArtifact>) downloadableArtifactsSet);
-		assertEquals (2, filteredArtifacts.size());
-		
+		assertEquals (3, filteredArtifacts.size());
+		for(DownloadableArtifact da : filteredArtifacts)
+		{
+			System.out.println(da.getRelativeDirPath());
+			assertTrue(!(da.getRelativeDirPath().contains("2.1") || da.getRelativeDirPath().contains("3.1")));
+		}
 	}
 	
 	DownloadableArtifact[] downloadableArtifacts = {
 			new DownloadableArtifact(
 					"https://artifactory/repo_key",
 					"target_path",
-					"path_to_version/2.1/dir/a.ext",
+					"path_to_version3/3/dir/c.ext",
 					"build.name=name_of_build",
-					"path_to_version/*/**", PatternType.NORMAL),
+					"path_to_version3/*/**", PatternType.NORMAL),
 			new DownloadableArtifact(
 					"https://artifactory/repo_key",
 					"target_path",
-					"path_to_version/2.0/dir/b.ext",
+					"path_to_version/2.1a/dir/a.ext",
 					"build.name=name_of_build",
-					"path_to_version/*/**", PatternType.NORMAL),
+					"path_to_version/2.*/**", PatternType.NORMAL),
 			new DownloadableArtifact(
 					"https://artifactory/repo_key",
 					"target_path",
-					"path_to_version/2.0/dir/a.ext",
+					"path_to_version/2.0a/dir/b.ext",
 					"build.name=name_of_build",
-					"path_to_version/*/**", PatternType.NORMAL),
+					"path_to_version/2.*/**", PatternType.NORMAL),
 			new DownloadableArtifact(
 					"https://artifactory/repo_key",
 					"target_path",
-					"path_to_version/2.0/dir/c.ext",
+					"path_to_version/2.0a/dir/a.ext",
 					"build.name=name_of_build",
-					"path_to_version/*/**", PatternType.NORMAL),
+					"path_to_version/2.*/**", PatternType.NORMAL),
+			new DownloadableArtifact(
+					"https://artifactory/repo_key",
+					"target_path",
+					"path_to_version/2.0a/dir/c.ext",
+					"build.name=name_of_build",
+					"path_to_version/2.*/**", PatternType.NORMAL),
 			new DownloadableArtifact(
 					"https://artifactory/repo_key",
 					"target_path",
